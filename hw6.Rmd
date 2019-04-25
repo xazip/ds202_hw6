@@ -74,20 +74,21 @@ Plot4 <- Plot3 + theme(panel.grid.major = element_blank(), panel.grid.minor = el
 
 Plot5 <- Plot4 + theme(panel.background = element_rect(fill = "cornsilk")) # Tried to match exact color
 
-Plot6 <- Plot5 + geom_text(aes(label = DogBreed), size = 1.5, vjust = 1.4, na.rm = TRUE) # Labels for each point
+Plot6 <- Plot5 + geom_text(aes(label = DogBreed), size = 1.9, vjust = 1.6, na.rm = TRUE) # Labels for each point
 
-Plot7 <- Plot6 + scale_color_manual(values = c("toy" = "#330000", "terrier" = "#A98B2D", "non-sporting" = "#6FA86C", "sporting" = "#B04946", "hound" = "#5E4D6C", "herding" = "#D59E7B", "working" = "#415C55"), breaks = c("toy", "terrier", "non-sporting", "sporting", "hound", "herding", "working")) #Assigned specific color to each Dog.
+Plot7 <- Plot6 + scale_color_manual(values = c("toy" = "#330000", "terrier" = "#A98B2D", "non-sporting" = "#6FA86C", "sporting" = "#B04946", "hound" = "#5E4D6C", "herding" = "#D59E7B", "working" = "#415C55"), breaks = c("toy", "terrier", "non-sporting", "sporting", "hound", "herding", "working")) #Assigned specific color to each Dog. Found exact colors from the webpage.
 
 Plot8 <- Plot7 + scale_shape_discrete(breaks = c("clever", "dumb"))
 
-Plot9 <- Plot8 + scale_size_continuous(range = c(1,2.5), breaks = c(1, 2, 3), labels = c("small", "medium", "large"))
+Plot9 <- Plot8 + scale_size_continuous(range = c(1,2.6), breaks = c(1, 2, 3), labels = c("small", "medium", "large"))
 
 
 Plot10 <- Plot9 + theme(legend.key.size = unit(.01, "cm"))
 
 Plot11 <- Plot10 + theme(legend.position = "top", legend.box = "horizontal") # Legend Position
 
-Plot12 <- Plot11 + guides(shape = guide_legend(order = 1, title = NULL), size = guide_legend(order = 2, title = NULL), color = guide_legend(order = 3, title = NULL)) # Legend Order
+Plot12 <- Plot11 + guides(shape = guide_legend(order = 1, title = NULL), size = guide_legend(order = 2, title = NULL), color = guide_legend(order = 3, title = NULL)) #Legend Order 
+#https://www.rdocumentation.org/packages/ggplot2/versions/3.1.1/topics/guides
 
 Plot13 <- Plot12 + annotate("text", x = 1.29, y = 1, label = "Inexplicably Overrated", size = 4) + annotate("text", x = 3.5, y = 1, label = "Hot Dogs!", size = 4) + annotate("text", x = 1.25, y = 173, label = "The Rightly Ignored", size = 4) + annotate("text", x = 3.3, y = 173, label = "Overlooked Treasures", size = 4) #Adding quadrant titles 
 
@@ -98,6 +99,6 @@ Plot14 <- Plot13 + labs(title = "Best in Show:", face = "bold") + labs(subtitle 
 Plot_Final <- Plot14 + annotate("text", x = 2.33, y = 1, label = "popularity", size = 3)
 
 
-Plot_Final
+Plot_Final 
 
 ```
