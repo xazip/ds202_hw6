@@ -1,0 +1,101 @@
+---
+title: "Untitled"
+author: "Andrew Maloney"
+date: "4/23/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(readxl)
+library(grid)
+library(ggrepel)
+library(ggthemes)
+library(plotly)
+
+```
+
+```{r}
+Best_in_Show <- read_xlsx("KIB - Best in Show (public).xlsx", sheet = "Best in show", skip = 5) %>% select(`Dog breed`, category, `popularity ranking (1-173, 1 = most popular)`, `intelligence ranking`, `intelligence category`, `life expectancy (years)`, `size category`, `shoulder height (cm)`) %>% rename(DogBreed = `Dog breed`, Popularity = `popularity ranking (1-173, 1 = most popular)`, Intelligence_Rank = `intelligence ranking`, Intelligence = `intelligence category`, Age = `life expectancy (years)`, size = `size category`)
+
+Best_in_Show <- Best_in_Show[-1,]
+
+
+
+
+Full_Best <- read_xlsx("KIB - Best in Show (public).xlsx", sheet = "Best in show full sheet", skip = 2) %>% select(`Sources - see bottom right`, category, `datadog score`, 6, `size category`, `intelligence category`) %>% rename(DogBreed = `Sources - see bottom right`, DogScore = `datadog score`, Popularity = 6, Size = `size category`, Intelligence = `intelligence category`)
+
+Full_Best <- Full_Best[-1,]
+
+
+```
+
+
+```{r}
+library(forcats)
+
+Full_Best_1 <- Full_Best %>% mutate(Intelligence = fct_collapse(Intelligence, clever = c("Above average", "Brightest", "Excellent"))) %>% mutate(Intelligence = fct_collapse(Intelligence, dumb = c("Average", "Fair", "Lowest")))
+
+Full_Best_2 <- Full_Best_1 %>% mutate(`POPULARITY IN US..6` = as.numeric(`POPULARITY IN US..6`)) %>% rename(Popularity = `POPULARITY IN US..6`)
+
+Size_Levels <- c("small", "medium", "large")
+category_Levels <- c("toy", "terrier", "non-sporting", "sporting", "hound", "herding", "working")
+
+Full_Best_3 <- Full_Best_2 %>% mutate(Size = factor(Size, Size_Levels), category = factor(category, category_Levels))
+
+levels(Full_Best_3$Size)[levels(Full_Best_3$Size) == "small"] <- "1"
+levels(Full_Best_3$Size)[levels(Full_Best_3$Size) == "medium"] <- "2"
+levels(Full_Best_3$Size)[levels(Full_Best_3$Size) == "large"] <- "3"
+
+
+
+Full_Best_3 <- Full_Best_3 %>% mutate(Size = as.integer(Size))
+
+summary(Full_Best_3$DogScore)
+summary(Full_Best_3$Popularity)
+
+
+```
+
+```{r}
+Plot <- Full_Best_3 %>% ggplot(aes(x = DogScore, y = Popularity, label = DogBreed))
+
+Plot1 <- Plot + geom_point(aes(shape = Intelligence, size = Size, color = category),na.rm = TRUE)+ scale_y_reverse()
+
+Plot2 <- Plot1 + geom_hline(yintercept = 86.50)+ geom_vline(xintercept = 2.58) 
+
+Plot3 <- Plot2 + theme(axis.ticks.x=element_blank(), axis.text.x=element_blank(), axis.ticks.y=element_blank(), axis.text.y=element_blank(), axis.title.y = element_blank(), axis.title.x = element_blank())
+
+Plot4 <- Plot3 + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank())
+
+Plot5 <- Plot4 + theme(panel.background = element_rect(fill = "cornsilk"))
+
+Plot6 <- Plot5 + geom_text(aes(label = DogBreed), size = 1.5, vjust = 1.3, na.rm = TRUE)
+
+Plot7 <- Plot6 + scale_color_manual(values = c("toy" = "#330000", "terrier" = "#A98B2D", "non-sporting" = "#6FA86C", "sporting" = "#B04946", "hound" = "#5E4D6C", "herding" = "#D59E7B", "working" = "#415C55"))
+
+Plot8 <- Plot7 + scale_shape_discrete(breaks = c("clever", "dumb"))
+
+Plot9 <- Plot8 + scale_size_continuous(range = c(1,2.5), breaks = c(1, 2, 3), labels = c("small", "medium", "large"))
+
+
+Plot10 <- Plot9 + theme(legend.key.size = unit(.01, "cm"))
+
+Plot11 <- Plot10 + theme(legend.position = "top", legend.box = "horizontal")
+
+Plot12 <- Plot11 + guides(shape = guide_legend(order = 1), size = guide_legend(order = 2), color = guide_legend(order = 3))
+
+Plot13 <- Plot12 + annotate("text", x = 1.25, y = 1, label = "Inexplicably Overrated", size = 4) + annotate("text", x = 3.5, y = 1, label = "Hot Dogs!", size = 4) + annotate("text", x = 1.25, y = 173, label = "The Rightly Ignored", size = 4) + annotate("text", x = 3.5, y = 173, label = "Overlooked Treasures", size = 4)
+
+Plot14 <- Plot13 + labs(title = "Best in Show", subtitle = "The ultimate datadog", face = "bold")
+
+Plot14
+#ggplotly(Plot14)
+
+```
