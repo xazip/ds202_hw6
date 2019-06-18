@@ -20,14 +20,18 @@ library(ggExtra)
 ```
 
 ```{r}
-Best_in_Show <- read_xlsx("KIB - Best in Show (public).xlsx", sheet = "Best in show", skip = 5) %>% select(`Dog breed`, category, `popularity ranking (1-173, 1 = most popular)`, `intelligence ranking`, `intelligence category`, `life expectancy (years)`, `size category`, `shoulder height (cm)`) %>% rename(DogBreed = `Dog breed`, Popularity = `popularity ranking (1-173, 1 = most popular)`, Intelligence_Rank = `intelligence ranking`, Intelligence = `intelligence category`, Age = `life expectancy (years)`, size = `size category`)
+Best_in_Show <- read_xlsx("KIB - Best in Show (public).xlsx", sheet = "Best in show", skip = 5) %>% 
+  select(`Dog breed`, category, `popularity ranking (1-173, 1 = most popular)`, `intelligence ranking`, `intelligence category`, `life expectancy (years)`, `size category`, `shoulder height (cm)`) %>% 
+    rename(DogBreed = `Dog breed`, Popularity = `popularity ranking (1-173, 1 = most popular)`, Intelligence_Rank = `intelligence ranking`, Intelligence = `intelligence category`, Age = `life expectancy (years)`, size = `size category`)
 
 Best_in_Show <- Best_in_Show[-1,]
 
 
 
 
-Full_Best <- read_xlsx("KIB - Best in Show (public).xlsx", sheet = "Best in show full sheet", skip = 2) %>% select(`Sources - see bottom right`, category, `datadog score`, 6, `size category`, `intelligence category`) %>% rename(DogBreed = `Sources - see bottom right`, DogScore = `datadog score`, Popularity = 6, Size = `size category`, Intelligence = `intelligence category`)
+Full_Best <- read_xlsx("KIB - Best in Show (public).xlsx", sheet = "Best in show full sheet", skip = 2) %>% 
+  select(`Sources - see bottom right`, category, `datadog score`, 6, `size category`, `intelligence category`) %>%      
+    rename(DogBreed = `Sources - see bottom right`, DogScore = `datadog score`, Popularity = 6, Size = `size category`, Intelligence = `intelligence category`)
 
 Full_Best <- Full_Best[-1,]
 
@@ -38,14 +42,20 @@ Full_Best <- Full_Best[-1,]
 ```{r}
 library(forcats)
 
-Full_Best_1 <- Full_Best %>% mutate(Intelligence = fct_collapse(Intelligence, clever = c("Above average", "Brightest", "Excellent"))) %>% mutate(Intelligence = fct_collapse(Intelligence, dumb = c("Average", "Fair", "Lowest")))
+Full_Best_1 <- Full_Best %>% 
+  mutate(Intelligence = fct_collapse(Intelligence, clever = c("Above average", "Brightest", "Excellent"))) %>% 
+    mutate(Intelligence = fct_collapse(Intelligence, dumb = c("Average", "Fair", "Lowest")))
 
-Full_Best_2 <- Full_Best_1 %>% mutate(`POPULARITY IN US..6` = as.numeric(`POPULARITY IN US..6`)) %>% rename(Popularity = `POPULARITY IN US..6`)
+Full_Best_2 <- Full_Best_1 %>% 
+  mutate(`POPULARITY IN US..6` = as.numeric(`POPULARITY IN US..6`)) %>% 
+    rename(Popularity = `POPULARITY IN US..6`)
+
 
 Size_Levels <- c("small", "medium", "large")
 category_Levels <- c("toy", "terrier", "non-sporting", "sporting", "hound", "herding", "working")
 
-Full_Best_3 <- Full_Best_2 %>% mutate(Size = factor(Size, Size_Levels), category = factor(category, category_Levels))
+Full_Best_3 <- Full_Best_2 %>% 
+  mutate(Size = factor(Size, Size_Levels), category = factor(category, category_Levels))
 
 levels(Full_Best_3$Size)[levels(Full_Best_3$Size) == "small"] <- "1"
 levels(Full_Best_3$Size)[levels(Full_Best_3$Size) == "medium"] <- "2"
@@ -53,7 +63,8 @@ levels(Full_Best_3$Size)[levels(Full_Best_3$Size) == "large"] <- "3"
 
 
 
-Full_Best_3 <- Full_Best_3 %>% mutate(Size = as.integer(Size))
+Full_Best_3 <- Full_Best_3 %>% 
+  mutate(Size = as.integer(Size))
 
 #summary(Full_Best_3$DogScore)
 #summary(Full_Best_3$Popularity)
@@ -62,9 +73,10 @@ Full_Best_3 <- Full_Best_3 %>% mutate(Size = as.integer(Size))
 ```
 
 ```{r}
-Plot <- Full_Best_3 %>% ggplot(aes(x = DogScore, y = Popularity, label = DogBreed)) # Relationship and point labels
+Plot <- Full_Best_3 %>% 
+  ggplot(aes(x = DogScore, y = Popularity, label = DogBreed)) # Relationship and point labels
 
-Plot1 <- Plot + geom_point(aes(shape = Intelligence, size = Size, color = category),na.rm = TRUE)+ scale_y_reverse() #Reverse y + assigned: shape, size, and color.
+Plot1 <- Plot + geom_point(aes(shape = Intelligence, size = Size, color = category),na.rm = TRUE) + scale_y_reverse() #Reverse y + assigned: shape, size, and color.
 
 Plot2 <- Plot1 + geom_hline(yintercept = 77)+ geom_vline(xintercept = 2.33) # added x and y intercepts
 
